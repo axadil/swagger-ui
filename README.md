@@ -1,14 +1,14 @@
 # Swagger UI
 
 [![Build Status](https://travis-ci.org/swagger-api/swagger-ui.svg?branch=master)](https://travis-ci.org/swagger-api/swagger-ui)
-[![NPM version](https://badge.fury.io/js/swagger-ui.png)](http://badge.fury.io/js/swagger-ui)
+[![NPM version](https://badge.fury.io/js/swagger-ui.svg)](http://badge.fury.io/js/swagger-ui)
 
 [![Dependency Status](https://david-dm.org/swagger-api/swagger-ui/status.svg)](https://david-dm.org/swagger-api/swagger-ui)
 [![devDependency Status](https://david-dm.org/swagger-api/swagger-ui/dev-status.svg)](https://david-dm.org/swagger-api/swagger-ui#info=devDependencies)
 
 Swagger UI is part of the Swagger project.  The Swagger project allows you to produce, visualize and consume your OWN RESTful services.  No proxy or 3rd party services required.  Do it your own way.
 
-Swagger UI is a dependency-free collection of HTML, Javascript, and CSS assets that dynamically
+Swagger UI is a dependency-free collection of HTML, JavaScript, and CSS assets that dynamically
 generate beautiful documentation and sandbox from a Swagger-compliant API. Because Swagger UI has no dependencies, you can host it in any server environment, or on your local machine.
 
 ## What's Swagger?
@@ -24,10 +24,13 @@ The OpenAPI Specification has undergone 4 revisions since initial creation in 20
 
 Swagger UI Version | Release Date | OpenAPI Spec compatibility | Notes | Status
 ------------------ | ------------ | -------------------------- | ----- | ------
-2.1.4              | 2016-01-06   | 1.1, 1.2, 2.0              | [tag v.2.1.4](https://github.com/swagger-api/swagger-ui/tree/v2.1.4) |
+2.2.10             | 2017-01-04   | 1.1, 1.2, 2.0              | [tag v2.2.10](https://github.com/swagger-api/swagger-ui/tree/v2.2.10) |
+2.1.5              | 2016-07-20   | 1.1, 1.2, 2.0              | [tag v2.1.5](https://github.com/swagger-api/swagger-ui/tree/v2.1.5) |
 2.0.24             | 2014-09-12   | 1.1, 1.2 | [tag v2.0.24](https://github.com/swagger-api/swagger-ui/tree/v2.0.24) |
 1.0.13             | 2013-03-08   | 1.1, 1.2 | [tag v1.0.13](https://github.com/swagger-api/swagger-ui/tree/v1.0.13) |
 1.0.1              | 2011-10-11   | 1.0, 1.1 | [tag v1.0.1](https://github.com/swagger-api/swagger-ui/tree/v1.0.1)   |
+
+**Note:** Support for versions older than 1.2 is limited and you may experience issues we cannot improve and support. We highly recommend that you upgrade your spec to the latest version.
 
 ## How to Use It
 
@@ -40,7 +43,8 @@ Swagger UI works in all evergreen desktop browsers (Chrome, Safari, Firefox). In
 ### Build
 You can rebuild swagger-ui on your own to tweak it or just so you can say you did.  To do so, follow these steps:
 
-### Windows Users: Please install [Python](https://www.python.org/downloads/windows/) before follow below guidelines for node-gyp rebuild to run.
+* Ensure you have `nodejs` 4.0 or greater installed, and on your classpath.
+* Windows Users: Please install [Python](https://www.python.org/downloads/windows/) before following the guidelines below for node-gyp rebuild to run.
 
 1. `npm install`
 2. `npm run build`
@@ -49,19 +53,26 @@ You can rebuild swagger-ui on your own to tweak it or just so you can say you di
 ### Development
 Use `npm run serve` to make a new build, watch for changes, and serve the result at http://localhost:8080/.
 
+### Running with Docker
+
+```
+docker pull swaggerapi/swagger-ui
+docker run -p 80:8080 swaggerapi/swagger-ui
+```
+
 ### Build using Docker
 
-To build swagger-ui using a docker container:
+To build swagger-ui using a Docker container:
 
 ```
 docker build -t swagger-ui-builder .
-docker run -p 127.0.0.1:8080:8080 swagger-ui-builder
+docker run -p 80:8080 swagger-ui-builder
 ```
 
-This will start Swagger UI at `http://localhost:8080`.
+This will start Swagger UI at `http://localhost`.
 
 ### Use
-Once you open the Swagger UI, it will load the [Swagger Petstore](http://petstore.swagger.io/v2/swagger.json) service and show its APIs.  You can enter your own server url and click explore to view the API.
+Once you open the Swagger UI, it will load the [Swagger Petstore](http://petstore.swagger.io/v2/swagger.json) service and show its APIs.  You can enter your own server url and click 'Explore' to view the API.
 
 ### Customize
 You may choose to customize Swagger UI for your organization. Here is an overview of what's in its various directories:
@@ -80,8 +91,8 @@ To use swagger-ui you should take a look at the [source of swagger-ui html page]
 
 ```javascript
 var swaggerUi = new SwaggerUi({
-  url:"http://petstore.swagger.io/v2/swagger.json",
-  dom_id:"swagger-ui-container"
+  url: 'http://petstore.swagger.io/v2/swagger.json',
+  dom_id: 'swagger-ui-container'
 });
 
 swaggerUi.load();
@@ -124,12 +135,12 @@ Header params are supported through a pluggable mechanism in [swagger-js](https:
 $('#input_apiKey').change(function() {
   var key = $('#input_apiKey')[0].value;
   if(key && key.trim() != "") {
-    swaggerUi.api.clientAuthorizations.add("key", new SwaggerClient.ApiKeyAuthorization("api_key", key, "header"));
+    swaggerUi.api.clientAuthorizations.add("auth_name", new SwaggerClient.ApiKeyAuthorization("api_key", key, "header"));
   }
 })
 ```
 
-This will add header `api_key` with value `key` on every call to the server.  You can substitute `query` to send the values as a query param.
+This will add the header `api_key` with value `key` on calls that have the `auth_name` security scheme as part of their swaggerDefinitions.  You can substitute `query` to send the values as a query param.
 
 ### Custom Header Parameters - (For Basic auth etc)
 If you have some header parameters which you need to send with every request, use the headers as below:
@@ -141,9 +152,9 @@ swaggerUi.api.clientAuthorizations.add("key", new SwaggerClient.ApiKeyAuthorizat
 Note!  You can pass multiple header params on a single request, just use unique names for them (`key` is used in the above example).
 
 ### Localization and translation
-The localization files are in the [lang](/lang) directory. Note that language files and translator is not included in SwaggerUI by default. You need to add them manually.
+The localization files are in the [lang](/lang) directory. Note that language files and translator are not included in SwaggerUI by default. You need to add them manually.
 
-To enable translation you should append next two lines in your Swagger's index.html (or another entry point you use)
+To enable translation, you should append the next two lines in your Swagger's index.html (or another entry point you use)
 ```html
 <script src='lang/translator.js' type='text/javascript'></script>
 <script src='lang/en.js' type='text/javascript'></script>
@@ -168,7 +179,7 @@ At this moment only inner html, title-attribute and value-attribute are going to
 ## CORS Support
 ### OR: How to deal with "Can't read from server. It may not have the appropriate access-control-origin settings."
 
-CORS is a technique to prevent websites from doing bad things with your personal data.  Most browsers + javascript toolkits not only support CORS but enforce it, which has implications for your API server which supports Swagger.
+CORS is a technique to prevent websites from doing bad things with your personal data.  Most browsers + JavaScript toolkits not only support CORS but enforce it, which has implications for your API server which supports Swagger.
 
 You can read about CORS here: http://www.w3.org/TR/cors.
 
@@ -231,7 +242,7 @@ Only headers with these names will be allowed to be sent by Swagger-UI.
 
 Create your own fork of [swagger-api/swagger-ui](https://github.com/swagger-api/swagger-ui)
 
-To share your changes, [submit a pull request](https://github.com/swagger-api/swagger-ui/pull/new/develop_2.0).
+To share your changes, [submit a pull request](https://github.com/swagger-api/swagger-ui/pull/new/master).
 
 ## Change Log
 Please see [releases](https://github.com/swagger-api/swagger-ui/releases) for change log.

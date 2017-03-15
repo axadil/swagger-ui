@@ -7,7 +7,8 @@ SwaggerUi.Views.ParameterView = Backbone.View.extend({
 
   initialize: function(){
     Handlebars.registerHelper('isArray', function(param, opts) {
-      if (param.type.toLowerCase() === 'array' || param.allowMultiple) {
+      var paramType = param.type && param.type.toLowerCase();
+      if (paramType === 'array' || param.allowMultiple) {
         return opts.fn(this);
       } else {
         return opts.inverse(this);
@@ -22,7 +23,6 @@ SwaggerUi.Views.ParameterView = Backbone.View.extend({
     var schema = this.model.schema || {};
     var consumes = this.model.consumes || [];
     var sampleJSON, signatureView;
-
 
     if (typeof type === 'undefined') {
       if (schema.$ref) {
@@ -61,7 +61,7 @@ SwaggerUi.Views.ParameterView = Backbone.View.extend({
 
     var signatureModel = {
       sampleJSON: isJSON ? sampleJSON : false,
-      sampleXML: sampleJSON && isXML ? SwaggerUi.partials.signature.createXMLSample(schema, modelDefinitions, true) : false,
+      sampleXML: sampleJSON && isXML ? SwaggerUi.partials.signature.createXMLSample('', schema, modelDefinitions, true) : false,
       isParam: true,
       signature: SwaggerUi.partials.signature.getParameterModelSignature(modelType, modelDefinitions),
       defaultRendering: this.model.defaultRendering
